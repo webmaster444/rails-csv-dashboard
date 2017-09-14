@@ -1,6 +1,4 @@
 (function() {
-
-// Inspired by http://informationandvisualization.de/blog/box-plot
 d3.box = function() {
   var width = 1,
       height = 1,
@@ -317,8 +315,6 @@ function boxQuartiles(d) {
   ];
 }
 
-})();
-
 var labels = true; // show the text labels beside individual boxplots?
 
 var margin = {top: 30, right: 50, bottom: 70, left: 50};
@@ -329,7 +325,7 @@ var min = Infinity,
     max = -Infinity;
 	
 // parse in the data	
-d3.csv("data.csv", function(error, csv) {	
+// d3.csv("data.csv", function(error, csv) {	
 	// using an array of arrays with
 	// data[n][2] 
 	// where n = number of columns in the csv file 
@@ -394,7 +390,7 @@ d3.csv("data.csv", function(error, csv) {
 		.attr("class", "box")    
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-	
+
 	// the x-axis
 	var x = d3.scale.ordinal()	   
 		.domain( data.map(function(d) { console.log(d); return d[0] } ) )	    
@@ -454,7 +450,7 @@ d3.csv("data.csv", function(error, csv) {
         .style("text-anchor", "middle")
 		.style("font-size", "16px") 
         .text("Quarter"); 
-});
+// });
 
 // Returns a function to compute the interquartile range.
 function iqr(k) {
@@ -469,3 +465,135 @@ function iqr(k) {
     return [i, j];
   };
 }
+
+/* Mean and Standard Deviation Chart */
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var formatPercent = d3.format(".0%");
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1, 1);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(formatPercent);
+
+var svg = d3.select("#mean_standard_deviation").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+// d3.tsv("data.tsv", function(error, data) {
+
+data = [
+	{'letter':'A','frequency':.081},
+	{'letter':'B','frequency':.29},
+	{'letter':'C','frequency':.039},
+	{'letter':'D','frequency':.281},
+	{'letter':'E','frequency':.71},
+	{'letter':'F','frequency':.191},
+	{'letter':'G','frequency':.031}
+	];
+
+  data.forEach(function(d) {
+    d.frequency = +d.frequency;
+  });
+
+  x.domain(data.map(function(d) { return d.letter; }));
+  y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Frequency");
+
+  svg.selectAll(".bar")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.letter); })
+      .attr("width", x.rangeBand())
+      .attr("y", function(d) { return y(d.frequency); })
+      .attr("height", function(d) { return height - y(d.frequency); });
+
+  d3.select("input").on("change", change);
+
+  var sortTimeout = setTimeout(function() {
+    d3.select("input").property("checked", true).each(change);
+  }, 2000);
+
+  function change() {
+    clearTimeout(sortTimeout);
+
+    // Copy-on-write since tweens are evaluated after a delay.
+    var x0 = x.domain(data.sort(this.checked
+        ? function(a, b) { return b.frequency - a.frequency; }
+        : function(a, b) { return d3.ascending(a.letter, b.letter); })
+        .map(function(d) { return d.letter; }))
+        .copy();
+
+    svg.selectAll(".bar")
+        .sort(function(a, b) { return x0(a.letter) - x0(b.letter); });
+
+    var transition = svg.transition().duration(750),
+        delay = function(d, i) { return i * 50; };
+
+    transition.selectAll(".bar")
+        .delay(delay)
+        .attr("x", function(d) { return x0(d.letter); });
+
+    transition.select(".x.axis")
+        .call(xAxis)
+      .selectAll("g")
+        .delay(delay);
+  }
+
+d = [
+     [
+           {axis: "strength", value: 13}, 
+           {axis: "intelligence", value: 1}, 
+           {axis: "charisma", value: 8},  
+           {axis: "dexterity", value: 4},  
+           {axis: "luck", value: 9}
+          ],[
+           {axis: "strength", value: 3}, 
+           {axis: "intelligence", value: 15}, 
+           {axis: "charisma", value: 4}, 
+           {axis: "dexterity", value: 1},  
+           {axis: "luck", value: 15}
+          ],[
+           {axis: "strength", value: 5}, 
+           {axis: "intelligence", value: 1}, 
+           {axis: "charisma", value: 16}, 
+           {axis: "dexterity", value: 10},  
+           {axis: "luck", value: 5}
+     ]
+];
+
+var RadarChart={defaultConfig:{containerClass:"radar-chart",w:600,h:600,factor:.95,factorLegend:1,levels:3,levelTick:!1,TickLength:10,maxValue:0,minValue:0,radians:2*Math.PI,color:d3.scale.category10(),axisLine:!0,axisText:!0,circles:!0,radius:5,open:!1,backgroundTooltipColor:"#555",backgroundTooltipOpacity:"0.7",tooltipColor:"white",axisJoin:function(a,b){return a.className||b},tooltipFormatValue:function(a){return a},tooltipFormatClass:function(a){return a},transitionDuration:300},chart:function(){function b(b,c){if(c===!1||void 0==c)b.classed("visible",0),b.select("rect").classed("visible",0);else{b.classed("visible",1);var d=b.node().parentNode,e=d3.mouse(d);b.select("text").classed("visible",1).style("fill",a.tooltipColor);var f=5,g=b.select("text").text(c).node().getBBox();b.select("rect").classed("visible",1).attr("x",0).attr("x",g.x-f).attr("y",g.y-f).attr("width",g.width+2*f).attr("height",g.height+2*f).attr("rx","5").attr("ry","5").style("fill",a.backgroundTooltipColor).style("opacity",a.backgroundTooltipOpacity),b.attr("transform","translate("+(e[0]+10)+","+(e[1]-10)+")")}}function c(c){c.each(function(c){function l(b,c,d,e){return d="undefined"!=typeof d?d:1,c*(1-d*e(b*a.radians/i))}function m(a,b,c){return l(a,b,c,Math.sin)}function n(a,b,c){return l(a,b,c,Math.cos)}var d=d3.select(this),e=d.selectAll("g.tooltip").data([c[0]]),f=e.enter().append("g").classed("tooltip",!0);f.append("rect").classed("tooltip",!0),f.append("text").classed("tooltip",!0),c=c.map(function(a){return a instanceof Array&&(a={axes:a}),a});var g=Math.max(a.maxValue,d3.max(c,function(a){return d3.max(a.axes,function(a){return a.value})}));g-=a.minValue;var h=c[0].axes.map(function(a,b){return{name:a.axis,xOffset:a.xOffset?a.xOffset:0,yOffset:a.yOffset?a.yOffset:0}}),i=h.length,j=a.factor*Math.min(a.w/2,a.h/2),k=Math.min(a.w/2,a.h/2);d.classed(a.containerClass,1);var o=d3.range(0,a.levels).map(function(b){return j*((b+1)/a.levels)}),p=d.selectAll("g.level-group").data(o);p.enter().append("g"),p.exit().remove(),p.attr("class",function(a,b){return"level-group level-group-"+b});var q=p.selectAll(".level").data(function(a){return d3.range(0,i).map(function(){return a})});if(q.enter().append("line"),q.exit().remove(),a.levelTick?q.attr("class","level").attr("x1",function(b,c){return j==b?m(c,b):m(c,b)+a.TickLength/2*Math.cos(c*a.radians/i)}).attr("y1",function(b,c){return j==b?n(c,b):n(c,b)-a.TickLength/2*Math.sin(c*a.radians/i)}).attr("x2",function(b,c){return j==b?m(c+1,b):m(c,b)-a.TickLength/2*Math.cos(c*a.radians/i)}).attr("y2",function(b,c){return j==b?n(c+1,b):n(c,b)+a.TickLength/2*Math.sin(c*a.radians/i)}).attr("transform",function(b){return"translate("+(a.w/2-b)+", "+(a.h/2-b)+")"}):q.attr("class","level").attr("x1",function(a,b){return m(b,a)}).attr("y1",function(a,b){return n(b,a)}).attr("x2",function(a,b){return m(b+1,a)}).attr("y2",function(a,b){return n(b+1,a)}).attr("transform",function(b){return"translate("+(a.w/2-b)+", "+(a.h/2-b)+")"}),a.axisLine||a.axisText){var r=d.selectAll(".axis").data(h),s=r.enter().append("g");a.axisLine&&s.append("line"),a.axisText&&s.append("text"),r.exit().remove(),r.attr("class","axis"),a.axisLine&&r.select("line").attr("x1",a.w/2).attr("y1",a.h/2).attr("x2",function(b,c){return a.w/2-k+m(c,k,a.factor)}).attr("y2",function(b,c){return a.h/2-k+n(c,k,a.factor)}),a.axisText&&r.select("text").attr("class",function(a,b){var c=m(b,.5);return"legend "+(.4>c?"left":c>.6?"right":"middle")}).attr("dy",function(a,b){var c=n(b,.5);return.1>c?"1em":c>.9?"0":"0.5em"}).text(function(a){return a.name}).attr("x",function(b,c){return b.xOffset+(a.w/2-k)+m(c,k,a.factorLegend)}).attr("y",function(b,c){return b.yOffset+(a.h/2-k)+n(c,k,a.factorLegend)})}c.forEach(function(b){b.axes.forEach(function(b,c){b.x=a.w/2-k+m(c,k,parseFloat(Math.max(b.value-a.minValue,0))/g*a.factor),b.y=a.h/2-k+n(c,k,parseFloat(Math.max(b.value-a.minValue,0))/g*a.factor)})});var t=d.selectAll(".area").data(c,a.axisJoin),u="polygon";if(a.open&&(u="polyline"),t.enter().append(u).classed({area:1,"d3-enter":1}).on("mouseover",function(c){d3.event.stopPropagation(),d.classed("focus",1),d3.select(this).classed("focused",1),b(e,a.tooltipFormatClass(c.className))}).on("mouseout",function(){d3.event.stopPropagation(),d.classed("focus",0),d3.select(this).classed("focused",0),b(e,!1)}),t.exit().classed("d3-exit",1).transition().duration(a.transitionDuration).remove(),t.each(function(a,b){var c={"d3-exit":0};c["radar-chart-serie"+b]=1,a.className&&(c[a.className]=1),d3.select(this).classed(c)}).style("stroke",function(b,c){return a.color(c)}).style("fill",function(b,c){return a.color(c)}).transition().duration(a.transitionDuration).attr("points",function(a){return a.axes.map(function(a){return[a.x,a.y].join(",")}).join(" ")}).each("start",function(){d3.select(this).classed("d3-enter",0)}),a.circles&&a.radius){var v=d.selectAll("g.circle-group").data(c,a.axisJoin);v.enter().append("g").classed({"circle-group":1,"d3-enter":1}),v.exit().classed("d3-exit",1).transition().duration(a.transitionDuration).remove(),v.each(function(a){var b={"d3-exit":0};a.className&&(b[a.className]=1),d3.select(this).classed(b)}).transition().duration(a.transitionDuration).each("start",function(){d3.select(this).classed("d3-enter",0)});var w=v.selectAll(".circle").data(function(a,b){return a.axes.map(function(a){return[a,b]})});w.enter().append("circle").classed({circle:1,"d3-enter":1}).on("mouseover",function(c){d3.event.stopPropagation(),b(e,a.tooltipFormatValue(c[0].value))}).on("mouseout",function(a){d3.event.stopPropagation(),b(e,!1),d.classed("focus",0)}),w.exit().classed("d3-exit",1).transition().duration(a.transitionDuration).remove(),w.each(function(a){var b={"d3-exit":0};b["radar-chart-serie"+a[1]]=1,d3.select(this).classed(b)}).style("fill",function(b){return a.color(b[1])}).transition().duration(a.transitionDuration).attr("r",a.radius).attr("cx",function(a){return a[0].x}).attr("cy",function(a){return a[0].y}).each("start",function(){d3.select(this).classed("d3-enter",0)});var x=t.node();x.parentNode.appendChild(x);var y=v.node();y.parentNode.appendChild(y);var z=e.node();z.parentNode.appendChild(z)}})}var a=Object.create(RadarChart.defaultConfig);return c.config=function(b){return arguments.length?(arguments.length>1?a[arguments[0]]=arguments[1]:d3.entries(b||{}).forEach(function(b){a[b.key]=b.value}),c):a},c},draw:function(a,b,c){var d=RadarChart.chart().config(c),e=d.config();d3.select(a).select("svg").remove(),d3.select(a).append("svg").attr("width",e.w).attr("height",e.h).datum(b).call(d)}};
+
+RadarChart.draw("#radar_chart", d);
+})();
+
+

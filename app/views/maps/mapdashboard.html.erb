@@ -1,4 +1,3 @@
-<%= javascript_include_tag('box_plots.js') %>
 <%= stylesheet_link_tag 'map_dashboard' %>
 <div class='row'>
 <h4> Map Dashboard: <%= @map.maptitle %> </h4>
@@ -48,3 +47,11 @@
 <div id="box_plots">
 
 </div>
+<div id="mean_standard_deviation">
+<label><input type="checkbox"> Sort values</label>
+</div>
+
+<div id="radar_chart">
+
+</div>
+<%= javascript_include_tag('box_plots.js') %>

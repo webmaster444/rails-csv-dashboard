@@ -1,3 +1,5 @@
+<%= javascript_include_tag('box_plots.js') %>
+<%= stylesheet_link_tag 'map_dashboard' %>
 <div class='row'>
 <h4> Map Dashboard: <%= @map.maptitle %> </h4>
 <span> Select Data for Map Group Data Summary </span>
@@ -42,3 +44,7 @@
 
 <%= hidden_field_tag :id, @map.id%>
 <%= hidden_field_tag :selected_traits, @map.id%>
+
+<div id="box_plots">
+
+</div>

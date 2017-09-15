@@ -4,7 +4,7 @@ class MapsController < ApplicationController
   def show
   	$selectedmap = Map.find(params[:id])
   	@map = Map.find(params[:id])					
-  	
+
 	unless @map.sourcefile.nil?
 		open_file_name = Rails.root.join('public', 'uploads', @map.sourcefile)
 		@csv_table = CSV.open(open_file_name, :headers => true).read	
@@ -36,14 +36,6 @@ class MapsController < ApplicationController
 	  else
 	    render 'new'
 	  end
-	end
-	
-	def vsd
-		@map = Map.find(params[:id])					
-		unless @map.sourcefile.nil?
-			open_file_name = Rails.root.join('public', 'uploads', @map.sourcefile)
-			@csv_table = CSV.open(open_file_name, :headers => true).read	
-		end
 	end
 
 	def vcm		

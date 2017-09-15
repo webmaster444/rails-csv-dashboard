@@ -4,8 +4,7 @@ class MapsController < ApplicationController
   def show
   	$selectedmap = Map.find(params[:id])
   	@map = Map.find(params[:id])					
-
-  	abort @map.inspect
+  	
 	unless @map.sourcefile.nil?
 		open_file_name = Rails.root.join('public', 'uploads', @map.sourcefile)
 		@csv_table = CSV.open(open_file_name, :headers => true).read	

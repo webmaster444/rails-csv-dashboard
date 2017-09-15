@@ -632,7 +632,6 @@ var svg = d3.select("#group_heat_map").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// d3.tsv("crimea.tsv", type, function(error, crimea) {
 	crimea = data;  
 
 type(crimea);
@@ -676,7 +675,6 @@ function type(data) {
 	  	return d;
 	})
 }
-// });
 })();
 
 

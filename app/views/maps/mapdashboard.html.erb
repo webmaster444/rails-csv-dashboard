@@ -2,7 +2,10 @@
 <div class='row'>
 <h4> Map Dashboard: <%= @map.maptitle %> </h4>
 <span> Select Data for Map Group Data Summary </span>
-<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#ctgmodal"> Create Trait Group </button>
+<div class='pull-right'>
+<button type="button" class="btn btn-primary"> Export Selection as Map </button>
+<button type="button" class="btn btn-primary"> Export Entire Map </button>
+</div>
 </div>
 <div class='row'>
 <div class='col-sm-6'>
@@ -48,7 +51,6 @@
 
 </div>
 <div id="mean_standard_deviation">
-<label><input type="checkbox"> Sort values</label>
 </div>
 
 <div id="radar_chart">

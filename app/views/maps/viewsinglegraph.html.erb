@@ -1,8 +1,15 @@
 <div class='row'>
 <h4> Single Graph: <%= @map.maptitle %> </h4>
 <span> Select Data for Map Group Data Summary </span>
-<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#ctgmodal"> Create Trait Group </button>
-</div>
+ <div class="dropdown">
+  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Select Chart Type
+  <span class="caret"></span></button>
+  <ul class="dropdown-menu">
+    <li><a href="#">Box Plot</a></li>
+    <li><a href="#">Radar</a></li>
+    <li><a href="#">Heatmap</a></li>
+  </ul>
+</div> 
 <div class='row'>
 <div class='col-sm-6'>
  <fieldset>
@@ -42,3 +49,10 @@
 
 <%= hidden_field_tag :id, @map.id%>
 <%= hidden_field_tag :selected_traits, @map.id%>
+
+<div class=row>
+<div class='col-sm-12'>
+<button type="button" class="btn btn-primary pull-right"> Export Chart </button>
+<button type="button" class="btn btn-primary pull-left"> Create Comparison </button>
+</div>
+</div>

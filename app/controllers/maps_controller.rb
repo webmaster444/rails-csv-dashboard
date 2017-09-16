@@ -169,21 +169,25 @@ class MapsController < ApplicationController
 	def import		
 		uploaded_io = params[:sourcefile]
 		
-		uploaded_file_name = Time.now.strftime("%d%m%y%H%M%S").to_s + uploaded_io.original_filename.to_s
-		
-		File.open(Rails.root.join('public', 'uploads', uploaded_file_name), 'wb') do |file|
-		  file.write(uploaded_io.read)
-		end					
-		
-		headers = CSV.read(Rails.root.join('public', 'uploads', uploaded_file_name), headers: true).headers
-		headers.shift(4)	
-		
-		trait = Trait.new(trait: headers)
-		trait.save
-		
-		@map = Map.find(params[:id])	
-		if @map.update(sourcefile: uploaded_file_name,trait_id: trait.id)		
-		  redirect_to @map		
+		if uploaded_io.nil?
+			
+		else
+			uploaded_file_name = Time.now.strftime("%d%m%y%H%M%S").to_s + uploaded_io.original_filename.to_s
+			
+			File.open(Rails.root.join('public', 'uploads', uploaded_file_name), 'wb') do |file|
+			  file.write(uploaded_io.read)
+			end					
+			
+			headers = CSV.read(Rails.root.join('public', 'uploads', uploaded_file_name), headers: true).headers
+			headers.shift(4)	
+			
+			trait = Trait.new(trait: headers)
+			trait.save
+			
+			@map = Map.find(params[:id])	
+			if @map.update(sourcefile: uploaded_file_name,trait_id: trait.id)		
+			  redirect_to @map		
+			end
 		end
 	end
 

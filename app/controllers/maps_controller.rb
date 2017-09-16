@@ -7,7 +7,11 @@ class MapsController < ApplicationController
 
 	unless @map.sourcefile.nil?
 		open_file_name = Rails.root.join('public', 'uploads', @map.sourcefile)
-		@csv_table = CSV.open(open_file_name, :headers => true).read	
+		if File.exist?(open_file_name)
+			@csv_table = CSV.open(open_file_name, :headers => true).read	
+		else
+			
+		end		
 	end
   end
   def index
@@ -170,7 +174,7 @@ class MapsController < ApplicationController
 		uploaded_io = params[:sourcefile]
 		
 		if uploaded_io.nil?
-			
+
 		else
 			uploaded_file_name = Time.now.strftime("%d%m%y%H%M%S").to_s + uploaded_io.original_filename.to_s
 			

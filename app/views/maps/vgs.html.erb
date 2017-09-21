@@ -48,13 +48,13 @@
 <table id="vgs_table">
 <thead>
   <tr>
-  <% @vgs_header.each do |header| %>
+  <% @csv_header.each do |header| %>
     <th><%= header %></th>
   <% end %> 
   </tr>
   </thead>
   <tbody>
-  <% @vgs_body.each do |row| %>
+  <% @csv_body.each do |row| %>
     <tr>
     <% row.each do |element| %>
       <td><%= element %></td>

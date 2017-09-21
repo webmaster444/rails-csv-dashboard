@@ -121,12 +121,7 @@ class MapsController < ApplicationController
 	def map_params
 		params.require(:map).permit(:datapoints, :maptitle)
 	end	  
-	def stats_min(data)
-	    data.min
-  	end
-  	def stats_max(data)
-    	data.max
-  	end
+	# Statistics calculation methods
   	def stats_average(data)
     	total = data.inject(:+)
     	len = data.length
@@ -203,9 +198,9 @@ class MapsController < ApplicationController
 			open_file_name = Rails.root.join('public', 'uploads', @map.sourcefile)
 			@csv_table = CSV.open(open_file_name, :headers => true).read	
 			
-			@vgs_header = CSV.read(Rails.root.join('public', 'uploads', open_file_name), headers: true).headers			
-			@vgs_header.shift(4)	
-			@vgs_body = Array.new
+			@csv_header = CSV.read(Rails.root.join('public', 'uploads', open_file_name), headers: true).headers			
+			@csv_header.shift(4)	
+			@csv_body = Array.new
 			tmp_row   = Array.new
 			vgs_row   = Array.new
 
@@ -228,7 +223,7 @@ class MapsController < ApplicationController
 			count60_row.push('Count 41-60')
 			count80_row.push('Count 61-80')
 			count100_row.push('Count 81-100')
-			@vgs_header.each_with_index do |row, i| 
+			@csv_header.each_with_index do |row, i| 
 				vgs_row = []
 				tmp_row = []
 				@csv_table.each do |row1|
@@ -242,14 +237,14 @@ class MapsController < ApplicationController
 				count80_row.push(count_min_to_max(tmp_row,61,80))
 				count100_row.push(count_min_to_max(tmp_row,81,100))
 			end			
-			@vgs_body.push(min_row)
-			@vgs_body.push(max_row)			
-			@vgs_body.push(count20_row)			
-			@vgs_body.push(count40_row)
-			@vgs_body.push(count60_row)
-			@vgs_body.push(count80_row)
-			@vgs_body.push(count100_row)
-			@vgs_header.unshift('Statistical Data Point')
+			@csv_body.push(min_row)
+			@csv_body.push(max_row)			
+			@csv_body.push(count20_row)			
+			@csv_body.push(count40_row)
+			@csv_body.push(count60_row)
+			@csv_body.push(count80_row)
+			@csv_body.push(count100_row)
+			@csv_header.unshift('Statistical Data Point')
 		end
  	end
 end

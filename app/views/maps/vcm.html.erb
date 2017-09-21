@@ -41,9 +41,11 @@
 <input id="traitValues" value='<%= @trait.trait %>' type="hidden" /> 
 <input id="traitgroupValues" value='<%= @group_array %>' type="hidden" /> 
 <input id="tagsValues" value='<%= @tags %>' type="hidden" /> 
+<div class='chart_wrapper col-sm-8 col-sm-offset-2 text-center'>
 <div id="matrix">
     <div style="display:inline-block;" id="legend"></div>
     <div style="display:inline-block; float:left" id="container"></div>
+</div>
 </div>
 
 <!-- Modal -->
@@ -54,7 +56,7 @@
     <%= form_tag ctg_maps_path, :id => 'ctg_modal', multipart: true do %>
   
   <%= hidden_field_tag :id, @map.id%>
-  <%= hidden_field_tag :selected_traits, @map.id%>
+  <%= hidden_field_tag :selected_traits, @map.id%>  
 
     <div class="modal-content">
       <div class="modal-header">

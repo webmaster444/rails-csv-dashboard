@@ -69,9 +69,20 @@ class MapsController < ApplicationController
 			headers = CSV.read(Rails.root.join('public', 'uploads', uploaded_file_name), headers: true).headers
 			headers.shift(4)	
 			
+			#Save traits
 			trait = Trait.new(trait: headers)
 			trait.save
 			
+			#Save tags			
+			@csv_table = CSV.open(Rails.root.join('public', 'uploads', uploaded_file_name), :headers => true).read
+			tags_array = Array.new			
+			
+			@csv_table.each do |row1|
+				tmp_str = row1[3].to_s.downcase.gsub! ', ', ','				
+				tmp_row1 = tmp_str.split(',')
+				tags_array = tags_array | tmp_row1
+			end				
+
 			@map = Map.find(params[:id])	
 			if @map.update(sourcefile: uploaded_file_name,trait_id: trait.id)		
 			  redirect_to @map		

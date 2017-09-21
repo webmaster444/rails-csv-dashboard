@@ -10,7 +10,8 @@ class MapsController < ApplicationController
 		if File.exist?(open_file_name)
 			@csv_table = CSV.open(open_file_name, :headers => true).read	
 		else
-			
+			@map.update(sourcefile: nil)
+			redirect_to @map, :notice => "Sorry but we couldn't open that file. Please upload file again"
 		end		
 	end
   end

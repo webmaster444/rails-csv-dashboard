@@ -380,7 +380,7 @@ var min = Infinity,
 		.height(height)	
 		.domain([min, max])
 		.showLabels(labels);
-
+  d3.select('#box_plots').html('');
 	var svg = d3.select("#box_plots").append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)

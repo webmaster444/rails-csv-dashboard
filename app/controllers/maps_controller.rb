@@ -83,8 +83,11 @@ class MapsController < ApplicationController
 				tags_array = tags_array | tmp_row1
 			end				
 
+			tag = Tag.new(tag: tags_array.to_s)
+			tag.save
+
 			@map = Map.find(params[:id])	
-			if @map.update(sourcefile: uploaded_file_name,trait_id: trait.id)		
+			if @map.update(sourcefile: uploaded_file_name,trait_id: trait.id, tags_id: tag.id)
 			  redirect_to @map		
 			end
 		end
@@ -186,6 +189,14 @@ class MapsController < ApplicationController
 			@traitgroups.each do |group|
 				@group_array.push(group.trait_group_name)
 			end
+		end
+
+		
+		unless @map.tags_id.nil?
+			tags_id = @map.tags_id
+
+			@tags = Tag.find(tags_id)		
+			@tags = @tags.tag.to_s
 		end
 
 		unless @map.sourcefile.nil?
